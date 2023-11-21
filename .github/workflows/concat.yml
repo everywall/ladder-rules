@@ -1,0 +1,25 @@
+name: Concatenate
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+      - id: listup-targets
+        run: |
+          files=$(find rulesets -print)
+          escaped_files="${files//$'\n'/\ }"
+          echo "::set-output name=files::${escaped_files}"
+      - name: Clear concat file
+        run: |
+          rm ruleset.yaml
+      - name: Concatenate files
+        uses: ftnext/action-concatenate-files@main
+        with:
+          sources: ${{ steps.listup-targets.outputs.files }}
+          destination: ruleset.yaml
