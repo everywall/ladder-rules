@@ -20,7 +20,10 @@
       prepend: |
         <script>
           document.addEventListener("DOMContentLoaded", () => {
+            // remove paywall items
             let paywall = document.querySelectorAll('script[src*="advertising-cdn.dpgmedia.cloud"], div[data-temptation-position="ARTICLE_BOTTOM"]');
             paywall.forEach(el => { el.remove(); });
+            // remove empty advert
+            document.querySelector('div[data-advert-placeholder-collapses]').remove();
           });
         </script>
