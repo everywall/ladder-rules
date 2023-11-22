@@ -1,0 +1,36 @@
+name: Concatenate
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - id: listup-targets
+        run: |
+          files=$(find rulesets -type f -print)
+          escaped_files="${files//$'\n'/\ }"
+          echo "files=${escaped_files}" >> $GITHUB_OUTPUT
+      - name: Clear concat file
+        run: |
+          rm ruleset.yaml
+      - name: Concatenate files
+        uses: ftnext/action-concatenate-files@main
+        with:
+          sources: ${{ steps.listup-targets.outputs.files }}
+          destination: ruleset.yaml
+      - name: Commit files
+        run: |
+          git config --local user.email "2406013+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "Add changes"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

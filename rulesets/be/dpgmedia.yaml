@@ -1,0 +1,29 @@
+- domains:
+  - myprivacy.dpgmedia.be
+  - myprivacy.dpgmedia.nl
+  headers:
+    cookie: isBot=true; authId=1
+    x-forwarded-for: none
+    referer: https://news.google.com
+- domains:
+  - demorgen.be
+  headers:
+    cookie: isBot=true; authId=1
+    user-agent: Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; Googlebot-News; +http://www.google.com/bot.html) Chrome/121.0.6140.0 Safari/537.36
+    x-forwarded-for: none
+    referer: https://news.google.com
+  regexRules:
+    - match: (\s&&\s)?window\.temptation(\s&&\s)?(\.init)?(\s&&\s)?(\(([^)]\s*)*\);)?
+      replace: true
+  injections:
+    - position: head
+      prepend: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            // remove paywall items
+            let paywall = document.querySelectorAll('script[src*="advertising-cdn.dpgmedia.cloud"], div[data-temptation-position="ARTICLE_BOTTOM"]');
+            paywall.forEach(el => { el.remove(); });
+            // remove empty advert
+            document.querySelector('div[data-advert-placeholder-collapses]').remove();
+          });
+        </script>
