@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - id: listup-targets
         run: |
           files=$(find rulesets -type f -print)
           escaped_files="${files//$'\n'/\ }"
-          echo "::set-output name=files::${escaped_files}"
+          echo "files=${escaped_files}" >> $GITHUB_OUTPUT
       - name: Clear concat file
         run: |
           rm ruleset.yaml
