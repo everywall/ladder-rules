@@ -1,0 +1,14 @@
+- domain: www.nebelspalter.ch
+  headers:
+    user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36
+    x-forwarded-for: none
+    referer: https://www.nebelspalter.ch/
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const paywall = document.querySelector('.nebelspalter-article');
+            removeDOMElement(paywall)
+          });
+        </script>
