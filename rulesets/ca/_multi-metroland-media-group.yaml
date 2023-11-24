@@ -33,3 +33,6 @@
             recommendations.forEach(el => { el.remove(); });
           });
         </script>
+  tests:
+  - url: https://www.wellandtribune.ca/news/niagara-region/niagara-transit-commission-rejects-council-request-to-reduce-its-budget-increase/article_e9fb424c-8df5-58ae-a6c3-3648e2a9df66.html
+    test: document.querySelector('div.subscriber-offers') === null
