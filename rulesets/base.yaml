@@ -1,0 +1,10 @@
+#basic function that are loaded for every domain
+- domain: ''
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            alert("Hello World!");
+          });
+        </script>
