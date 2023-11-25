@@ -7,3 +7,6 @@
     query:
       - key: amp
         value: 1
+  tests:
+    url: https://www.tagesspiegel.de/politik/impfungen-in-deutschland-und-der-welt-der-aktuelle-stand-der-impfkampagne/26809888.html
+    test: document.querySelector('html').classList.contains('amp-mode')

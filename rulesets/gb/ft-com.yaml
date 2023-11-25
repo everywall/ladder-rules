@@ -1,6 +1,7 @@
-- domain: www.ft.com
+- domain: ft.com
   headers:
     referer: https://t.co/x?amp=1
+    content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
   injections:
     - position: head
       append: |
@@ -18,3 +19,6 @@
             }, 1000);
           })
         </script>
+  tests:
+    - url: https://www.ft.com/content/5348ec64-010e-40f4-a27e-6d1252a0c537
+      test: document.querySelector('.o-cookie-message') === null

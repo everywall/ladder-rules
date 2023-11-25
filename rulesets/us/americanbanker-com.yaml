@@ -14,3 +14,6 @@
             }
           });
         </script>
+  tests:
+    - url: https://www.americanbanker.com/news/how-foster-youth-become-financially-forgotten
+      test: document.querySelector('.inline-gate') === null

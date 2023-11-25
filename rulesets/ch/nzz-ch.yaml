@@ -22,3 +22,6 @@
             removeDOMElement(paywall)
           });
         </script>
+  tests:
+    - url: https://www.nzz.ch/feuilleton/edward-w-said-der-ideologe-des-palaestinensischen-terrors-ld.1766658
+      test: document.querySelector('.dynamic-regwall') === null

@@ -12,3 +12,6 @@
             headimage.forEach(image => { image.style.filter = ''; });
           });
         </script>
+  tests:
+    - url: https://www.washingtonpost.com/world/2023/11/24/russia-crimea-tunnel-china/
+      test: document.querySelector('div[data-qa="subscribe-promo"]') === null

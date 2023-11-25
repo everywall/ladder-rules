@@ -5,6 +5,7 @@
     ueser-agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
     cookie: nyt-a=; nyt-gdpr=0; nyt-geo=DE; nyt-privacy=1
     referer: https://www.google.com/ 
+    content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
   injections:
     - position: head
       append: |
@@ -15,3 +16,6 @@
             banners.forEach(el => { el.remove(); });
           });
         </script>
+  tests:
+    - url: https://www.nytimes.com/2023/11/24/business/retail-workers-black-friday-shopping.html
+      test: document.querySelector('div[data-testid="inline-message"]') === null
