@@ -10,7 +10,11 @@
         <script>
           window.localStorage.clear();
           document.addEventListener("DOMContentLoaded", () => {
-            const banners = document.querySelectorAll('div.article__content--restricted-media, section.paywall');
+            const banners = document.querySelectorAll('section.paywall');
             banners.forEach(el => { el.remove(); });
+            const contentWrapper = document.querySelectorAll('section.article__content--restricted-media');
+            if (contentWrapper?.[0]) {
+              contentWrapper[0].style.height = '100%'
+            }
           });
         </script>
