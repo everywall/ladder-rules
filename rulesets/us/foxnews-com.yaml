@@ -1,0 +1,20 @@
+- domains: 
+  - www.foxbusiness.com
+  - www.foxnews.com
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            let featuredVideo = document.querySelector('.featured-video');
+            featuredVideo.remove();
+
+            let relatedArticles = document.querySelectorAll('p a strong');
+            relatedArticles.forEach(el => el.remove());
+          });
+        </script>
+  tests:
+    - url: https://www.foxbusiness.com/fox-news-tech/elon-musk-tells-advertisers-who-left-x-go-f-yourself
+      test: document.querySelector('video') === null && document.querySelector('strong') === null
+    - url: https://www.foxnews.com/media/mayim-bialik-calls-feminists-silence-hamas-rape-torture-october-7-terror-attacks
+      test: document.querySelector('video') === null && document.querySelector('strong') === null
