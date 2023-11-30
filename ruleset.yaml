@@ -33,6 +33,9 @@
             recommendations.forEach(el => { el.remove(); });
           });
         </script>
+  tests:
+  - url: https://www.wellandtribune.ca/news/niagara-region/niagara-transit-commission-rejects-council-request-to-reduce-its-budget-increase/article_e9fb424c-8df5-58ae-a6c3-3648e2a9df66.html
+    test: document.querySelector('div.subscriber-offers') === null
 
 - domains: 
   - www.nytimes.com
@@ -41,6 +44,7 @@
     ueser-agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
     cookie: nyt-a=; nyt-gdpr=0; nyt-geo=DE; nyt-privacy=1
     referer: https://www.google.com/ 
+    content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
   injections:
     - position: head
       append: |
@@ -51,7 +55,9 @@
             banners.forEach(el => { el.remove(); });
           });
         </script>
-
+  tests:
+    - url: https://www.nytimes.com/2023/11/24/business/retail-workers-black-friday-shopping.html
+      test: document.querySelector('div[data-testid="inline-message"]') === null
 - domains: 
   - www.architecturaldigest.com
   - www.bonappetit.com
@@ -88,7 +94,9 @@
             }
           });
         </script>
-
+  tests:
+    - url: https://www.americanbanker.com/news/how-foster-youth-become-financially-forgotten
+      test: document.querySelector('.inline-gate') === null
 - domain: www.washingtonpost.com
   injections:
     - position: head
@@ -103,7 +111,9 @@
             headimage.forEach(image => { image.style.filter = ''; });
           });
         </script>
-
+  tests:
+    - url: https://www.washingtonpost.com/world/2023/11/24/russia-crimea-tunnel-china/
+      test: document.querySelector('div[data-qa="subscribe-promo"]') === null
 - domain: www.usatoday.com
   injections:
     - position: head
@@ -132,6 +142,9 @@
     query:
       - key: amp
         value: 1
+  tests:
+    url: https://www.tagesspiegel.de/politik/impfungen-in-deutschland-und-der-welt-der-aktuelle-stand-der-impfkampagne/26809888.html
+    test: document.querySelector('html').classList.contains('amp-mode')
 
 - domain: www.nzz.ch
   paths:
@@ -157,6 +170,9 @@
             removeDOMElement(paywall)
           });
         </script>
+  tests:
+    - url: https://www.nzz.ch/feuilleton/edward-w-said-der-ideologe-des-palaestinensischen-terrors-ld.1766658
+      test: document.querySelector('.dynamic-regwall') === null
 
 - domains:
   - myprivacy.dpgmedia.be
@@ -172,6 +188,7 @@
     user-agent: Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; Googlebot-News; +http://www.google.com/bot.html) Chrome/121.0.6140.0 Safari/537.36
     x-forwarded-for: none
     referer: https://news.google.com
+    content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
   regexRules:
     - match: (\s&&\s)?window\.temptation(\s&&\s)?(\.init)?(\s&&\s)?(\(([^)]\s*)*\);)?
       replace: true
@@ -187,10 +204,14 @@
             document.querySelector('div[data-advert-placeholder-collapses]').remove();
           });
         </script>
+  tests:
+    - url: https://www.demorgen.be/nieuws/verkiezingen-2024-zullen-uitdraaien-op-een-strijd-tussen-vivaldi-en-bourgeois-blok~b0f7b8a9/
+      test: document.querySelector('div[data-temptation-position="ARTICLE_BOTTOM"]') === null
 
-- domain: www.ft.com
+- domain: ft.com
   headers:
     referer: https://t.co/x?amp=1
+    content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
   injections:
     - position: head
       append: |
@@ -208,4 +229,6 @@
             }, 1000);
           })
         </script>
-
+  tests:
+    - url: https://www.ft.com/content/5348ec64-010e-40f4-a27e-6d1252a0c537
+      test: document.querySelector('.o-cookie-message') === null
