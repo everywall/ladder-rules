@@ -7,13 +7,14 @@ on:
 
 jobs:
   build:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - id: listup-targets
         run: |
-          files=$(find rulesets -type f -print)
+          files=$(find rulesets/ -name "*.yaml" -type f -print)
           escaped_files="${files//$'\n'/\ }"
           echo "files=${escaped_files}" >> $GITHUB_OUTPUT
       - name: Clear concat file
@@ -24,13 +25,18 @@ jobs:
         with:
           sources: ${{ steps.listup-targets.outputs.files }}
           destination: ruleset.yaml
-      - name: Commit files
-        run: |
-          git config --local user.email "2406013+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit -a -m "Add changes"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        id: cpr
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          branch: concat
+          commit-message: |
+            Concatenate ruleset
+            [skip ci]
+          labels: |
+            automated-pr
+      - name: Approve Pull Request
+        uses: juliangruber/approve-pull-request-action@v2.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ steps.cpr.outputs.pull-request-number }}
