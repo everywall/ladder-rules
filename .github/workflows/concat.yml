@@ -36,7 +36,7 @@ jobs:
           labels: |
             automated-pr
       - name: Approve Pull Request
-        uses: juliangruber/approve-pull-request-action@v2.0.0
+        uses: juliangruber/approve-pull-request-action@v2.0.4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ steps.cpr.outputs.pull-request-number }}
