@@ -1,0 +1,20 @@
+- domains: 
+  - www.lemonde.fr
+  headers:
+    user-agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+    referer: https://www.google.com/ 
+    content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+  injections:
+    - position: head
+      append: |
+        <script>
+          window.localStorage.clear();
+          document.addEventListener("DOMContentLoaded", () => {
+            const banners = document.querySelectorAll('section.paywall');
+            banners.forEach(el => { el.remove(); });
+            const contentWrapper = document.querySelectorAll('section.article__content--restricted-media');
+            if (contentWrapper?.[0]) {
+              contentWrapper[0].style.height = '100%'
+            }
+          });
+        </script>
