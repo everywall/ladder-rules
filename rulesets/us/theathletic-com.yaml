@@ -1,0 +1,25 @@
+- domain: theathletic.com
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            let overlays = document.querySelectorAll('div[id*="overlay"], div:empty:not([data-rjs])');
+            overlays.forEach(el => el.remove());
+
+            let slideup = document.querySelectorAll('div[id^=slideup-]');
+            slideup.forEach(el => el.remove());
+
+            let apron = document.getElementById('free-apron-cta');
+            apron.remove();
+            
+            let body = document.querySelector('body');
+            body.style.overflow = 'visible';
+            body.style.position = 'relative';
+          });
+        </script>
+  tests:
+    - url: https://theathletic.com/5097900/2023/11/29/corey-perry-blackhawks-nhl/
+      test: document.querySelector('div[id*="overlay"], div:empty:not([data-rjs])') === null 
+    - url: https://theathletic.com/5097851/2023/11/29/mandel-mailbag-cfp-texas-alabama/
+      test: document.getElementById('free-apron-cta') === null
