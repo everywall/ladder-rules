@@ -1,3 +1,185 @@
+- domain: www.nzz.ch
+  paths:
+    - /international
+    - /sport
+    - /wirtschaft
+    - /technologie
+    - /feuilleton
+    - /zuerich
+    - /wissenschaft
+    - /gesellschaft
+    - /panorama
+    - /mobilitaet
+    - /reisen
+    - /meinung
+    - /finanze
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const paywall = document.querySelector('.dynamic-regwall');
+            removeDOMElement(paywall)
+          });
+        </script>
+  tests:
+    - url: https://www.nzz.ch/feuilleton/edward-w-said-der-ideologe-des-palaestinensischen-terrors-ld.1766658
+      test: document.querySelector('.dynamic-regwall') === null
+
+# loads amp version of page
+- domain: tagesspiegel.de
+  headers:
+    content-security-policy: script-src 'self';
+    user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36
+  urlMods:
+    query:
+      - key: amp
+        value: 1
+  tests:
+    url: https://www.tagesspiegel.de/politik/impfungen-in-deutschland-und-der-welt-der-aktuelle-stand-der-impfkampagne/26809888.html
+    test: document.querySelector('html').classList.contains('amp-mode')
+
+- domain: www.washingtonpost.com
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            let paywall = document.querySelectorAll('div[data-qa$="-ad"], div[id="leaderboard-wrapper"], div[data-qa="subscribe-promo"]');
+            paywall.forEach(el => { el.remove(); });
+            const images = document.querySelectorAll('img');
+            images.forEach(image => { image.parentElement.style.filter = ''; });
+            const headimage = document.querySelectorAll('div .aspect-custom');
+            headimage.forEach(image => { image.style.filter = ''; });
+          });
+        </script>
+  tests:
+    - url: https://www.washingtonpost.com/world/2023/11/24/russia-crimea-tunnel-china/
+      test: document.querySelector('div[data-qa="subscribe-promo"]') === null
+- domain: americanbanker.com
+  paths:
+    - /news
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const inlineGate = document.querySelector('.inline-gate');
+            if (inlineGate) {
+              inlineGate.classList.remove('inline-gate');
+              const inlineGated = document.querySelectorAll('.inline-gated');
+              for (const elem of inlineGated) { elem.classList.remove('inline-gated'); }
+            }
+          });
+        </script>
+  tests:
+    - url: https://www.americanbanker.com/news/how-foster-youth-become-financially-forgotten
+      test: document.querySelector('.inline-gate') === null
+- domain: www.usatoday.com
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const banners = document.querySelectorAll('div.roadblock-container, .gnt_nb, [aria-label="advertisement"], div[id="main-frame-error"]');
+            banners.forEach(el => { el.remove(); });
+          });
+        </script>
+
+- domains: 
+  - www.nytimes.com
+  - www.time.com
+  headers:
+    ueser-agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+    cookie: nyt-a=; nyt-gdpr=0; nyt-geo=DE; nyt-privacy=1
+    referer: https://www.google.com/ 
+    content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+  injections:
+    - position: head
+      append: |
+        <script>
+          window.localStorage.clear();
+          document.addEventListener("DOMContentLoaded", () => {
+            const banners = document.querySelectorAll('div[data-testid="inline-message"], div[id^="ad-"], div[id^="leaderboard-"], div.expanded-dock, div.pz-ad-box, div[id="top-wrapper"], div[id="bottom-wrapper"]');
+            banners.forEach(el => { el.remove(); });
+          });
+        </script>
+  tests:
+    - url: https://www.nytimes.com/2023/11/24/business/retail-workers-black-friday-shopping.html
+      test: document.querySelector('div[data-testid="inline-message"]') === null
+- domain: medium.com
+  headers:
+    referer: https://t.co/x?amp=1
+    x-forwarded-for: none
+    user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36
+    content-security-policy: script-src 'self';
+    cookie: 
+
+- domains: 
+  - www.architecturaldigest.com
+  - www.bonappetit.com
+  - www.cntraveler.com
+  - www.epicurious.com
+  - www.gq.com
+  - www.newyorker.com
+  - www.vanityfair.com
+  - www.vogue.com
+  - www.wired.com
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const banners = document.querySelectorAll('.paywall-bar, div[class^="MessageBannerWrapper-"');
+            banners.forEach(el => { el.remove(); });
+          });
+        </script>
+
+- domains: 
+  - www.foxbusiness.com
+  - www.foxnews.com
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            let featuredVideo = document.querySelector('.featured-video');
+            featuredVideo.remove();
+
+            let relatedArticles = document.querySelectorAll('p a strong');
+            relatedArticles.forEach(el => el.remove());
+          });
+        </script>
+  tests:
+    - url: https://www.foxbusiness.com/fox-news-tech/elon-musk-tells-advertisers-who-left-x-go-f-yourself
+      test: document.querySelector('video') === null && document.querySelector('strong') === null
+    - url: https://www.foxnews.com/media/mayim-bialik-calls-feminists-silence-hamas-rape-torture-october-7-terror-attacks
+      test: document.querySelector('video') === null && document.querySelector('strong') === null
+- domain: theathletic.com
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            let overlays = document.querySelectorAll('div[id*="overlay"], div:empty:not([data-rjs])');
+            overlays.forEach(el => el.remove());
+
+            let slideup = document.querySelectorAll('div[id^=slideup-]');
+            slideup.forEach(el => el.remove());
+
+            let apron = document.getElementById('free-apron-cta');
+            apron.remove();
+            
+            let body = document.querySelector('body');
+            body.style.overflow = 'visible';
+            body.style.position = 'relative';
+          });
+        </script>
+  tests:
+    - url: https://theathletic.com/5097900/2023/11/29/corey-perry-blackhawks-nhl/
+      test: document.querySelector('div[id*="overlay"], div:empty:not([data-rjs])') === null 
+    - url: https://theathletic.com/5097851/2023/11/29/mandel-mailbag-cfp-texas-alabama/
+      test: document.getElementById('free-apron-cta') === null
 - domains: 
   - www.thestar.com
   - www.niagarafallsreview.ca
@@ -37,143 +219,30 @@
   - url: https://www.wellandtribune.ca/news/niagara-region/niagara-transit-commission-rejects-council-request-to-reduce-its-budget-increase/article_e9fb424c-8df5-58ae-a6c3-3648e2a9df66.html
     test: document.querySelector('div.subscriber-offers') === null
 
-- domains: 
-  - www.nytimes.com
-  - www.time.com
+- domain: ft.com
   headers:
-    ueser-agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
-    cookie: nyt-a=; nyt-gdpr=0; nyt-geo=DE; nyt-privacy=1
-    referer: https://www.google.com/ 
+    referer: https://t.co/x?amp=1
     content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
   injections:
     - position: head
       append: |
         <script>
-          window.localStorage.clear();
           document.addEventListener("DOMContentLoaded", () => {
-            const banners = document.querySelectorAll('div[data-testid="inline-message"], div[id^="ad-"], div[id^="leaderboard-"], div.expanded-dock, div.pz-ad-box, div[id="top-wrapper"], div[id="bottom-wrapper"]');
-            banners.forEach(el => { el.remove(); });
-          });
+            const styleTags = document.querySelectorAll('link[rel="stylesheet"]');
+            styleTags.forEach(el => { 
+              const href = el.getAttribute('href').substring(1);
+              const updatedHref = href.replace(/(https?:\/\/.+?)\/{2,}/, '$1/');
+              el.setAttribute('href', updatedHref);
+            });
+            setTimeout(() => {
+              const cookie = document.querySelectorAll('.o-cookie-message, .js-article-ribbon, .o-ads, .o-banner, .o-message, .article__content-sign-up');
+              cookie.forEach(el => { el.remove(); });
+            }, 1000);
+          })
         </script>
   tests:
-    - url: https://www.nytimes.com/2023/11/24/business/retail-workers-black-friday-shopping.html
-      test: document.querySelector('div[data-testid="inline-message"]') === null
-- domains: 
-  - www.architecturaldigest.com
-  - www.bonappetit.com
-  - www.cntraveler.com
-  - www.epicurious.com
-  - www.gq.com
-  - www.newyorker.com
-  - www.vanityfair.com
-  - www.vogue.com
-  - www.wired.com
-  injections:
-    - position: head
-      append: |
-        <script>
-          document.addEventListener("DOMContentLoaded", () => {
-            const banners = document.querySelectorAll('.paywall-bar, div[class^="MessageBannerWrapper-"');
-            banners.forEach(el => { el.remove(); });
-          });
-        </script>
-
-- domain: americanbanker.com
-  paths:
-    - /news
-  injections:
-    - position: head
-      append: |
-        <script>
-          document.addEventListener("DOMContentLoaded", () => {
-            const inlineGate = document.querySelector('.inline-gate');
-            if (inlineGate) {
-              inlineGate.classList.remove('inline-gate');
-              const inlineGated = document.querySelectorAll('.inline-gated');
-              for (const elem of inlineGated) { elem.classList.remove('inline-gated'); }
-            }
-          });
-        </script>
-  tests:
-    - url: https://www.americanbanker.com/news/how-foster-youth-become-financially-forgotten
-      test: document.querySelector('.inline-gate') === null
-- domain: www.washingtonpost.com
-  injections:
-    - position: head
-      append: |
-        <script>
-          document.addEventListener("DOMContentLoaded", () => {
-            let paywall = document.querySelectorAll('div[data-qa$="-ad"], div[id="leaderboard-wrapper"], div[data-qa="subscribe-promo"]');
-            paywall.forEach(el => { el.remove(); });
-            const images = document.querySelectorAll('img');
-            images.forEach(image => { image.parentElement.style.filter = ''; });
-            const headimage = document.querySelectorAll('div .aspect-custom');
-            headimage.forEach(image => { image.style.filter = ''; });
-          });
-        </script>
-  tests:
-    - url: https://www.washingtonpost.com/world/2023/11/24/russia-crimea-tunnel-china/
-      test: document.querySelector('div[data-qa="subscribe-promo"]') === null
-- domain: www.usatoday.com
-  injections:
-    - position: head
-      append: |
-        <script>
-          document.addEventListener("DOMContentLoaded", () => {
-            const banners = document.querySelectorAll('div.roadblock-container, .gnt_nb, [aria-label="advertisement"], div[id="main-frame-error"]');
-            banners.forEach(el => { el.remove(); });
-          });
-        </script>
-
-- domain: medium.com
-  headers:
-    referer: https://t.co/x?amp=1
-    x-forwarded-for: none
-    user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36
-    content-security-policy: script-src 'self';
-    cookie: 
-
-# loads amp version of page
-- domain: tagesspiegel.de
-  headers:
-    content-security-policy: script-src 'self';
-    user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36
-  urlMods:
-    query:
-      - key: amp
-        value: 1
-  tests:
-    url: https://www.tagesspiegel.de/politik/impfungen-in-deutschland-und-der-welt-der-aktuelle-stand-der-impfkampagne/26809888.html
-    test: document.querySelector('html').classList.contains('amp-mode')
-
-- domain: www.nzz.ch
-  paths:
-    - /international
-    - /sport
-    - /wirtschaft
-    - /technologie
-    - /feuilleton
-    - /zuerich
-    - /wissenschaft
-    - /gesellschaft
-    - /panorama
-    - /mobilitaet
-    - /reisen
-    - /meinung
-    - /finanze
-  injections:
-    - position: head
-      append: |
-        <script>
-          document.addEventListener("DOMContentLoaded", () => {
-            const paywall = document.querySelector('.dynamic-regwall');
-            removeDOMElement(paywall)
-          });
-        </script>
-  tests:
-    - url: https://www.nzz.ch/feuilleton/edward-w-said-der-ideologe-des-palaestinensischen-terrors-ld.1766658
-      test: document.querySelector('.dynamic-regwall') === null
-
+    - url: https://www.ft.com/content/5348ec64-010e-40f4-a27e-6d1252a0c537
+      test: document.querySelector('.o-cookie-message') === null
 - domains:
   - myprivacy.dpgmedia.be
   - myprivacy.dpgmedia.nl
@@ -208,27 +277,3 @@
     - url: https://www.demorgen.be/nieuws/verkiezingen-2024-zullen-uitdraaien-op-een-strijd-tussen-vivaldi-en-bourgeois-blok~b0f7b8a9/
       test: document.querySelector('div[data-temptation-position="ARTICLE_BOTTOM"]') === null
 
-- domain: ft.com
-  headers:
-    referer: https://t.co/x?amp=1
-    content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
-  injections:
-    - position: head
-      append: |
-        <script>
-          document.addEventListener("DOMContentLoaded", () => {
-            const styleTags = document.querySelectorAll('link[rel="stylesheet"]');
-            styleTags.forEach(el => { 
-              const href = el.getAttribute('href').substring(1);
-              const updatedHref = href.replace(/(https?:\/\/.+?)\/{2,}/, '$1/');
-              el.setAttribute('href', updatedHref);
-            });
-            setTimeout(() => {
-              const cookie = document.querySelectorAll('.o-cookie-message, .js-article-ribbon, .o-ads, .o-banner, .o-message, .article__content-sign-up');
-              cookie.forEach(el => { el.remove(); });
-            }, 1000);
-          })
-        </script>
-  tests:
-    - url: https://www.ft.com/content/5348ec64-010e-40f4-a27e-6d1252a0c537
-      test: document.querySelector('.o-cookie-message') === null
