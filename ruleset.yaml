@@ -23,6 +23,9 @@
             htmlObject.style.overflow = "auto";
           });
         </script>
+  tests:
+    - url: https://kw.be/nieuws/criminaliteit/geweld/in-40-jaar-nog-nooit-meegemaakt-chauffeur-meense-touroperator-krijgt-slag-in-gezicht-na-aanrijding-in-frankrijk/
+      test: document.querySelector('#paywall-modal') === null
 
 - domains:
   - myprivacy.dpgmedia.be
