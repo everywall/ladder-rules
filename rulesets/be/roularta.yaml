@@ -1,0 +1,25 @@
+- domains:
+  - kw.be
+  headers:
+    x-forwarded-for: none
+    referer: https://news.google.com
+    user-agent: Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; Googlebot-News; +http://www.google.com/bot.html) Chrome/121.0.6140.0 Safari/537.36
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            // remove paywall
+            document.querySelector("#paywall-modal").remove();
+          });
+        </script>
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("scroll", () => {
+            // reset overflow
+            let htmlObject = document.getElementsByTagName("html")[0];
+            htmlObject.classList.remove("is-locked", "has-paywall");
+            htmlObject.style.overflow = "auto";
+          });
+        </script>
