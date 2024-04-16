@@ -1,0 +1,19 @@
+- domains:
+  - apache.be
+  headers:
+    x-forwarded-for: none
+    cookie: cookiesjsr=%7B%22base%22%3Afalse%2C%22functional%22%3Afalse%2C%22video%22%3Afalse%7D
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            // remove paywall
+            document.querySelector("#spb-block-apachepopupblock").remove();
+            // restore scrolling
+            document.body.style.overflow = "auto";
+          });
+        </script>
+  tests:
+    - url: https://apache.be/2024/03/25/chinese-spionkop-van-vlaams-belang
+      test: document.querySelector('#spb-block-apachepopupblock') === null
