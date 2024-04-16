@@ -30,7 +30,6 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         id: cpr
         with:
-          branch: concat
           commit-message: |
             Concatenate ruleset
             [skip ci]
