@@ -61,6 +61,26 @@
     - url: https://www.demorgen.be/nieuws/verkiezingen-2024-zullen-uitdraaien-op-een-strijd-tussen-vivaldi-en-bourgeois-blok~b0f7b8a9/
       test: document.querySelector('div[data-temptation-position="ARTICLE_BOTTOM"]') === null
 
+- domains:
+  - apache.be
+  headers:
+    x-forwarded-for: none
+    cookie: cookiesjsr=%7B%22base%22%3Afalse%2C%22functional%22%3Afalse%2C%22video%22%3Afalse%7D
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            // remove paywall
+            document.querySelector("#spb-block-apachepopupblock").remove();
+            // restore scrolling
+            document.body.style.overflow = "auto";
+          });
+        </script>
+  tests:
+    - url: https://apache.be/2024/03/25/chinese-spionkop-van-vlaams-belang
+      test: document.querySelector('#spb-block-apachepopupblock') === null
+
 - domains: 
   - www.thestar.com
   - www.niagarafallsreview.ca
