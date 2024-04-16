@@ -26,7 +26,7 @@ jobs:
           sources: ${{ steps.listup-targets.outputs.files }}
           destination: ruleset.yaml
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6
         id: cpr
         with:
           branch: concat
@@ -35,8 +35,13 @@ jobs:
             [skip ci]
           labels: |
             automated-pr
-      - name: Merge Pull Request
-        uses: juliangruber/merge-pull-request-action@v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          number: ${{ steps.cpr.outputs.pull-request-number }}
+          delete-branch: true
+      - name: Enable Pull Request Automerge
+        run: gh pr merge --merge --auto "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Merge Pull Request
+      #   uses: juliangruber/merge-pull-request-action@v1
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     number: ${{ steps.cpr.outputs.pull-request-number }}
