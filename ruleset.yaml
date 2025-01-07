@@ -1,53 +1,55 @@
-- domains: 
-  - www.thestar.com
-  - www.niagarafallsreview.ca
-  - www.stcatharinesstandard.ca
-  - www.thepeterboroughexaminer.com
-  - www.therecord.com
-  - www.thespec.com
-  - www.wellandtribune.ca
+- domain: theathletic.com
   injections:
     - position: head
       append: |
         <script>
-          window.localStorage.clear();
           document.addEventListener("DOMContentLoaded", () => {
-            const paywall = document.querySelectorAll('div.subscriber-offers');
-            paywall.forEach(el => { el.remove(); });
-            const subscriber_only = document.querySelectorAll('div.subscriber-only');
-            for (const elem of subscriber_only) {
-              if (elem.classList.contains('encrypted-content') && dompurify_loaded) {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString('<div>' + DOMPurify.sanitize(unscramble(elem.innerText)) + '</div>', 'text/html');
-                const content_new = doc.querySelector('div');
-                elem.parentNode.replaceChild(content_new, elem);
-              }
-              elem.removeAttribute('style');
-              elem.removeAttribute('class');
-            }
-            const banners = document.querySelectorAll('div.subscription-required, div.redacted-overlay, div.subscriber-hide, div.tnt-ads-container');
-            banners.forEach(el => { el.remove(); });
-            const ads = document.querySelectorAll('div.tnt-ads-container, div[class*="adLabelWrapper"]');
-            ads.forEach(el => { el.remove(); });
-            const recommendations = document.querySelectorAll('div[id^="tncms-region-article"]');
-            recommendations.forEach(el => { el.remove(); });
+            let overlays = document.querySelectorAll('div[id*="overlay"], div:empty:not([data-rjs])');
+            overlays.forEach(el => el.remove());
+
+            let slideup = document.querySelectorAll('div[id^=slideup-]');
+            slideup.forEach(el => el.remove());
+
+            let apron = document.getElementById('free-apron-cta');
+            apron.remove();
+            
+            let body = document.querySelector('body');
+            body.style.overflow = 'visible';
+            body.style.position = 'relative';
           });
         </script>
-
+  tests:
+    - url: https://theathletic.com/5097900/2023/11/29/corey-perry-blackhawks-nhl/
+      test: document.querySelector('div[id*="overlay"], div:empty:not([data-rjs])') === null 
+    - url: https://theathletic.com/5097851/2023/11/29/mandel-mailbag-cfp-texas-alabama/
+      test: document.getElementById('free-apron-cta') === null
 - domains: 
-  - www.nytimes.com
-  - www.time.com
-  headers:
-    ueser-agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
-    cookie: nyt-a=; nyt-gdpr=0; nyt-geo=DE; nyt-privacy=1
-    referer: https://www.google.com/ 
+  - www.foxbusiness.com
+  - www.foxnews.com
   injections:
     - position: head
       append: |
         <script>
-          window.localStorage.clear();
           document.addEventListener("DOMContentLoaded", () => {
-            const banners = document.querySelectorAll('div[data-testid="inline-message"], div[id^="ad-"], div[id^="leaderboard-"], div.expanded-dock, div.pz-ad-box, div[id="top-wrapper"], div[id="bottom-wrapper"]');
+            let featuredVideo = document.querySelector('.featured-video');
+            featuredVideo.remove();
+
+            let relatedArticles = document.querySelectorAll('p a strong');
+            relatedArticles.forEach(el => el.remove());
+          });
+        </script>
+  tests:
+    - url: https://www.foxbusiness.com/fox-news-tech/elon-musk-tells-advertisers-who-left-x-go-f-yourself
+      test: document.querySelector('video') === null && document.querySelector('strong') === null
+    - url: https://www.foxnews.com/media/mayim-bialik-calls-feminists-silence-hamas-rape-torture-october-7-terror-attacks
+      test: document.querySelector('video') === null && document.querySelector('strong') === null
+- domain: www.usatoday.com
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const banners = document.querySelectorAll('div.roadblock-container, .gnt_nb, [aria-label="advertisement"], div[id="main-frame-error"]');
             banners.forEach(el => { el.remove(); });
           });
         </script>
@@ -88,6 +90,37 @@
             }
           });
         </script>
+  tests:
+    - url: https://www.americanbanker.com/news/how-foster-youth-become-financially-forgotten
+      test: document.querySelector('.inline-gate') === null
+- domains: 
+  - www.nytimes.com
+  - www.time.com
+  headers:
+    ueser-agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+    cookie: nyt-a=; nyt-gdpr=0; nyt-geo=DE; nyt-privacy=1
+    referer: https://www.google.com/ 
+    content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+  injections:
+    - position: head
+      append: |
+        <script>
+          window.localStorage.clear();
+          document.addEventListener("DOMContentLoaded", () => {
+            const banners = document.querySelectorAll('div[data-testid="inline-message"], div[id^="ad-"], div[id^="leaderboard-"], div.expanded-dock, div.pz-ad-box, div[id="top-wrapper"], div[id="bottom-wrapper"]');
+            banners.forEach(el => { el.remove(); });
+          });
+        </script>
+  tests:
+    - url: https://www.nytimes.com/2023/11/24/business/retail-workers-black-friday-shopping.html
+      test: document.querySelector('div[data-testid="inline-message"]') === null
+- domain: medium.com
+  headers:
+    referer: https://t.co/x?amp=1
+    x-forwarded-for: none
+    user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36
+    content-security-policy: script-src 'self';
+    cookie: 
 
 - domain: www.washingtonpost.com
   injections:
@@ -103,25 +136,47 @@
             headimage.forEach(image => { image.style.filter = ''; });
           });
         </script>
-
-- domain: www.usatoday.com
+  tests:
+    - url: https://www.washingtonpost.com/world/2023/11/24/russia-crimea-tunnel-china/
+      test: document.querySelector('div[data-qa="subscribe-promo"]') === null
+- domains: 
+  - www.thestar.com
+  - www.niagarafallsreview.ca
+  - www.stcatharinesstandard.ca
+  - www.thepeterboroughexaminer.com
+  - www.therecord.com
+  - www.thespec.com
+  - www.wellandtribune.ca
   injections:
     - position: head
       append: |
         <script>
+          window.localStorage.clear();
           document.addEventListener("DOMContentLoaded", () => {
-            const banners = document.querySelectorAll('div.roadblock-container, .gnt_nb, [aria-label="advertisement"], div[id="main-frame-error"]');
+            const paywall = document.querySelectorAll('div.subscriber-offers');
+            paywall.forEach(el => { el.remove(); });
+            const subscriber_only = document.querySelectorAll('div.subscriber-only');
+            for (const elem of subscriber_only) {
+              if (elem.classList.contains('encrypted-content') && dompurify_loaded) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString('<div>' + DOMPurify.sanitize(unscramble(elem.innerText)) + '</div>', 'text/html');
+                const content_new = doc.querySelector('div');
+                elem.parentNode.replaceChild(content_new, elem);
+              }
+              elem.removeAttribute('style');
+              elem.removeAttribute('class');
+            }
+            const banners = document.querySelectorAll('div.subscription-required, div.redacted-overlay, div.subscriber-hide, div.tnt-ads-container');
             banners.forEach(el => { el.remove(); });
+            const ads = document.querySelectorAll('div.tnt-ads-container, div[class*="adLabelWrapper"]');
+            ads.forEach(el => { el.remove(); });
+            const recommendations = document.querySelectorAll('div[id^="tncms-region-article"]');
+            recommendations.forEach(el => { el.remove(); });
           });
         </script>
-
-- domain: medium.com
-  headers:
-    referer: https://t.co/x?amp=1
-    x-forwarded-for: none
-    user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36
-    content-security-policy: script-src 'self';
-    cookie: 
+  tests:
+  - url: https://www.wellandtribune.ca/news/niagara-region/niagara-transit-commission-rejects-council-request-to-reduce-its-budget-increase/article_e9fb424c-8df5-58ae-a6c3-3648e2a9df66.html
+    test: document.querySelector('div.subscriber-offers') === null
 
 # loads amp version of page
 - domain: tagesspiegel.de
@@ -132,6 +187,9 @@
     query:
       - key: amp
         value: 1
+  tests:
+    url: https://www.tagesspiegel.de/politik/impfungen-in-deutschland-und-der-welt-der-aktuelle-stand-der-impfkampagne/26809888.html
+    test: document.querySelector('html').classList.contains('amp-mode')
 
 - domain: www.nzz.ch
   paths:
@@ -157,40 +215,14 @@
             removeDOMElement(paywall)
           });
         </script>
+  tests:
+    - url: https://www.nzz.ch/feuilleton/edward-w-said-der-ideologe-des-palaestinensischen-terrors-ld.1766658
+      test: document.querySelector('.dynamic-regwall') === null
 
-- domains:
-  - myprivacy.dpgmedia.be
-  - myprivacy.dpgmedia.nl
-  headers:
-    cookie: isBot=true; authId=1
-    x-forwarded-for: none
-    referer: https://news.google.com
-- domains:
-  - demorgen.be
-  headers:
-    cookie: isBot=true; authId=1
-    user-agent: Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; Googlebot-News; +http://www.google.com/bot.html) Chrome/121.0.6140.0 Safari/537.36
-    x-forwarded-for: none
-    referer: https://news.google.com
-  regexRules:
-    - match: (\s&&\s)?window\.temptation(\s&&\s)?(\.init)?(\s&&\s)?(\(([^)]\s*)*\);)?
-      replace: true
-  injections:
-    - position: head
-      prepend: |
-        <script>
-          document.addEventListener("DOMContentLoaded", () => {
-            // remove paywall items
-            let paywall = document.querySelectorAll('script[src*="advertising-cdn.dpgmedia.cloud"], div[data-temptation-position="ARTICLE_BOTTOM"]');
-            paywall.forEach(el => { el.remove(); });
-            // remove empty advert
-            document.querySelector('div[data-advert-placeholder-collapses]').remove();
-          });
-        </script>
-
-- domain: www.ft.com
+- domain: ft.com
   headers:
     referer: https://t.co/x?amp=1
+    content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
   injections:
     - position: head
       append: |
@@ -208,4 +240,89 @@
             }, 1000);
           })
         </script>
+  tests:
+    - url: https://www.ft.com/content/5348ec64-010e-40f4-a27e-6d1252a0c537
+      test: document.querySelector('.o-cookie-message') === null
+- domains:
+  - myprivacy.dpgmedia.be
+  - myprivacy.dpgmedia.nl
+  headers:
+    cookie: isBot=true; authId=1
+    x-forwarded-for: none
+    referer: https://news.google.com
+- domains:
+  - demorgen.be
+  headers:
+    cookie: isBot=true; authId=1
+    user-agent: Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; Googlebot-News; +http://www.google.com/bot.html) Chrome/121.0.6140.0 Safari/537.36
+    x-forwarded-for: none
+    referer: https://news.google.com
+    content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+  regexRules:
+    - match: (\s&&\s)?window\.temptation(\s&&\s)?(\.init)?(\s&&\s)?(\(([^)]\s*)*\);)?
+      replace: true
+  injections:
+    - position: head
+      prepend: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            // remove paywall items
+            let paywall = document.querySelectorAll('script[src*="advertising-cdn.dpgmedia.cloud"], div[data-temptation-position="ARTICLE_BOTTOM"]');
+            paywall.forEach(el => { el.remove(); });
+            // remove empty advert
+            document.querySelector('div[data-advert-placeholder-collapses]').remove();
+          });
+        </script>
+  tests:
+    - url: https://www.demorgen.be/nieuws/verkiezingen-2024-zullen-uitdraaien-op-een-strijd-tussen-vivaldi-en-bourgeois-blok~b0f7b8a9/
+      test: document.querySelector('div[data-temptation-position="ARTICLE_BOTTOM"]') === null
+
+- domains:
+  - apache.be
+  headers:
+    x-forwarded-for: none
+    cookie: cookiesjsr=%7B%22base%22%3Afalse%2C%22functional%22%3Afalse%2C%22video%22%3Afalse%7D
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            // remove paywall
+            document.querySelector("#spb-block-apachepopupblock").remove();
+            // restore scrolling
+            document.body.style.overflow = "auto";
+          });
+        </script>
+  tests:
+    - url: https://apache.be/2024/03/25/chinese-spionkop-van-vlaams-belang
+      test: document.querySelector('#spb-block-apachepopupblock') === null
+
+- domains:
+  - kw.be
+  headers:
+    x-forwarded-for: none
+    referer: https://news.google.com
+    user-agent: Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; Googlebot-News; +http://www.google.com/bot.html) Chrome/121.0.6140.0 Safari/537.36
+  injections:
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            // remove paywall
+            document.querySelector("#paywall-modal").remove();
+          });
+        </script>
+    - position: head
+      append: |
+        <script>
+          document.addEventListener("scroll", () => {
+            // reset overflow
+            let htmlObject = document.getElementsByTagName("html")[0];
+            htmlObject.classList.remove("is-locked", "has-paywall");
+            htmlObject.style.overflow = "auto";
+          });
+        </script>
+  tests:
+    - url: https://kw.be/nieuws/criminaliteit/geweld/in-40-jaar-nog-nooit-meegemaakt-chauffeur-meense-touroperator-krijgt-slag-in-gezicht-na-aanrijding-in-frankrijk/
+      test: document.querySelector('#paywall-modal') === null
 
