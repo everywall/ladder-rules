@@ -9,9 +9,13 @@
           document.addEventListener("DOMContentLoaded", () => {
             const styleTags = document.querySelectorAll('link[rel="stylesheet"]');
             styleTags.forEach(el => { 
-              const href = el.getAttribute('href').substring(1);
-              const updatedHref = href.replace(/(https?:\/\/.+?)\/{2,}/, '$1/');
-              el.setAttribute('href', updatedHref);
+              const href = el.getAttribute('href');
+              if (!href) return;
+              // Only de-proxy stylesheet URLs ("/https://...") to avoid breaking absolute "https://..." hrefs.
+              if (href.startsWith('/https://') || href.startsWith('/http://')) {
+                const updatedHref = href.slice(1).replace(/(https?:\/\/.+?)\/{2,}/, '$1/');
+                el.setAttribute('href', updatedHref);
+              }
             });
             setTimeout(() => {
               const cookie = document.querySelectorAll('.o-cookie-message, .js-article-ribbon, .o-ads, .o-banner, .o-message, .article__content-sign-up');
