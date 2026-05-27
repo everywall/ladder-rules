@@ -97,7 +97,7 @@
   - www.nytimes.com
   - www.time.com
   headers:
-    ueser-agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+    user-agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
     cookie: nyt-a=; nyt-gdpr=0; nyt-geo=DE; nyt-privacy=1
     referer: https://www.google.com/ 
     content-security-policy: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
@@ -188,8 +188,8 @@
       - key: amp
         value: 1
   tests:
-    url: https://www.tagesspiegel.de/politik/impfungen-in-deutschland-und-der-welt-der-aktuelle-stand-der-impfkampagne/26809888.html
-    test: document.querySelector('html').classList.contains('amp-mode')
+    - url: https://www.tagesspiegel.de/politik/impfungen-in-deutschland-und-der-welt-der-aktuelle-stand-der-impfkampagne/26809888.html
+      test: document.querySelector('html').classList.contains('amp-mode')
 
 - domain: www.nzz.ch
   paths:
@@ -230,9 +230,13 @@
           document.addEventListener("DOMContentLoaded", () => {
             const styleTags = document.querySelectorAll('link[rel="stylesheet"]');
             styleTags.forEach(el => { 
-              const href = el.getAttribute('href').substring(1);
-              const updatedHref = href.replace(/(https?:\/\/.+?)\/{2,}/, '$1/');
-              el.setAttribute('href', updatedHref);
+              const href = el.getAttribute('href');
+              if (!href) return;
+              // Only de-proxy stylesheet URLs ("/https://...") to avoid breaking absolute "https://..." hrefs.
+              if (href.startsWith('/https://') || href.startsWith('/http://')) {
+                const updatedHref = href.slice(1).replace(/(https?:\/\/.+?)\/{2,}/, '$1/');
+                el.setAttribute('href', updatedHref);
+              }
             });
             setTimeout(() => {
               const cookie = document.querySelectorAll('.o-cookie-message, .js-article-ribbon, .o-ads, .o-banner, .o-message, .article__content-sign-up');
@@ -325,4 +329,3 @@
   tests:
     - url: https://kw.be/nieuws/criminaliteit/geweld/in-40-jaar-nog-nooit-meegemaakt-chauffeur-meense-touroperator-krijgt-slag-in-gezicht-na-aanrijding-in-frankrijk/
       test: document.querySelector('#paywall-modal') === null
-
